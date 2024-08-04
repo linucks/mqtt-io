@@ -12,6 +12,7 @@ sensor_modules:
 sensor_inputs:
   - name: temph20
     module: ds18x20
+    pin: 1
     digits: 2
     interval: 5
     
