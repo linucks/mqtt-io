@@ -21,7 +21,7 @@ from typing import cast
 from ...types import CerberusSchemaType, ConfigType
 from . import GenericSensor
 
-REQUIREMENTS = ("adafruit-circuitpython-ds18x20", "adafruit_onewire")
+REQUIREMENTS = ("adafruit-circuitpython-ds18x20", "adafruit-circuitpython-onewire")
 
 
 class Sensor(GenericSensor):
