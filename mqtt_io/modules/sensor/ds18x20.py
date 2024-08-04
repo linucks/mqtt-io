@@ -7,12 +7,11 @@ Example configuration:
 sensor_modules:
   - name: ds18x20
     module: ds18x20
-    pin: 4
+    pin: 1
 
 sensor_inputs:
   - name: temph20
     module: ds18x20
-    pin: 1
     digits: 2
     interval: 5
     
@@ -23,6 +22,7 @@ from ...types import CerberusSchemaType, ConfigType
 from . import GenericSensor
 
 REQUIREMENTS = ("adafruit-circuitpython-ds18x20", "adafruit-circuitpython-onewire")
+CONFIG_SCHEMA = {"pin": {"type": "integer", "required": True, "empty": False}}
 
 
 class Sensor(GenericSensor):
@@ -46,7 +46,6 @@ class Sensor(GenericSensor):
 
         onewire_bus = OneWireBus(cast(int, self.config["pin"]))
         self.ds18 = DS18X20(onewire_bus, onewire_bus.scan()[0])  # Assume is only device
-        # self.ds18 = DS18X20(self.onewire_bus)
 
     def get_value(self, sens_conf: ConfigType) -> float:
         return cast(float, self.ds18.temperature)
