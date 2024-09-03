@@ -109,11 +109,10 @@ class Sensor(GenericSensor):
 
         self.kvalue = INITIAL_KVALUE
         self.kvalue_low = INITIAL_KVALUE
-        self.kvalue_mid = INITIAL_KVALUE
         self.kvalue_high = INITIAL_KVALUE
         self.calibration_file = os.path.abspath(CALIBRATION_FILE)
         if os.path.exists(self.calibration_file):
-            self.kvalue_low, self.kvalue_mid, self.kvalue_high = self.read_calibration()
+            self.kvalue_low, self.kvalue_high = self.read_calibration()
 
     def setup_sensor(self, sens_conf: ConfigType, event_bus: EventBus) -> None:
         """
@@ -156,11 +155,10 @@ class Sensor(GenericSensor):
 
         event_bus.subscribe(SensorReadEvent, on_sensor_read)
 
-    def read_calibration(self) -> Tuple[float, float, float]:
+    def read_calibration(self) -> Tuple[float, float]:
         """Read calibrated values from json file.
         {
           "kvalue_low": 1.0,
-          "kvalue_mid": 1.0,
           "kvalue_high": 1.0
         }
 
@@ -176,9 +174,8 @@ class Sensor(GenericSensor):
                         f"Calibration file {self.calibration_file} is not valid JSON"
                     ) from None
                 kvalue_low = float(data["kvalue_low"])
-                kvalue_mid = float(data["kvalue_mid"])
                 kvalue_high = float(data["kvalue_high"])
-            return (kvalue_low, kvalue_mid, kvalue_high)
+            return (kvalue_low, kvalue_high)
         raise FileNotFoundError(f"Calibration file {self.calibration_file} not found")
 
     @staticmethod
@@ -191,10 +188,8 @@ class Sensor(GenericSensor):
         # pylint: disable=attribute-defined-outside-init
         raw_ec = self.calc_raw_ec(voltage)
         value_temp = raw_ec * self.kvalue
-        if value_temp > 5.0:
+        if value_temp > 2.5:
             self.kvalue = self.kvalue_high
-        elif value_temp >= 2.0:
-            self.kvalue = self.kvalue_mid
         elif value_temp < 2.0:
             self.kvalue = self.kvalue_low
         value = raw_ec * self.kvalue
