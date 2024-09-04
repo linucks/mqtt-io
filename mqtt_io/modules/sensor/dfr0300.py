@@ -60,6 +60,8 @@ INITIAL_KVALUE = 1.0
 DEFAULT_TEMPERATURE = 25.0
 TEMPSENSOR_ID = "tempsensor"
 TEMPERATURE_ID = "temperature"
+RES2 = 820.0
+ECREF = 200.0
 
 
 # pylint: disable=too-many-instance-attributes
@@ -175,13 +177,14 @@ class Sensor(GenericSensor):
                     ) from None
                 kvalue_low = float(data["kvalue_low"])
                 kvalue_high = float(data["kvalue_high"])
+                _LOG.debug("Read calibration values: %f, %f", kvalue_low, kvalue_high)
             return (kvalue_low, kvalue_high)
         raise FileNotFoundError(f"Calibration file {self.calibration_file} not found")
 
     @staticmethod
     def calc_raw_ec(voltage: float) -> float:
         """Convert voltage to raw EC"""
-        return 1000 * voltage / 820.0 / 200.0
+        return 1000 * voltage / RES2 / ECREF
 
     def ec_from_voltage(self, voltage: float, temperature: float) -> float:
         """Convert voltage to EC with temperature compensation"""
